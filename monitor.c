@@ -5,6 +5,7 @@
 #include <sys/wait.h> 
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include <string.h>
 void printProgArgv(int count, char* argv[]);
 const char* TerminationStatus(int status);
@@ -16,7 +17,7 @@ void sigIntHandling(int num){
 }
 int main(int argc, char* argv[]){
 	int fd[2];//used for sending start time from child to parent process
-	
+	int execSucess;
 
 	if (argc>1){//if there is a program to be executed
 		printf("There are %d command argument for the monitor\n",argc);
@@ -41,13 +42,23 @@ int main(int argc, char* argv[]){
 		}
 		else if(pid==0){//child process
 			printf("child process created\n");
+			//Process with id: 12557 created for the command: xxxxx
+			printf("Process with id: %d created for the command: %s\n",getpid(),argv[1]);
 			close(fd[0]);//close read end of pipe
 			struct timeval progStartTime;
 			gettimeofday(&progStartTime,NULL);	//get wallclock time
 			//send the start time of the prog to the parent 
 			write(fd[1],&progStartTime,sizeof(progStartTime));//write start time to the pipe
 			close(fd[1]);//end of writing to the pipe, close pipe
-			execvp(argv[1], progArgv); //   argv== {"./monitor","./hello",NULL}
+			if (execvp(argv[1], progArgv)==-1){
+				execSucess=-1;
+				printf("exec: : No such file or directory\n");
+				return 1;
+			}
+				//failed in exec prog
+			else{execSucess=1;}
+
+			//   argv== {"./monitor","./hello",NULL}
 			printf("execvp() Failed"); 
 			exit(-1);
 		}
