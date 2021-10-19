@@ -1,0 +1,27 @@
+int main(...){
+	int fd[9][2];//used for create 9 pipes(at most)
+	for(int i=0;i<9;i++) pipe(fd[i]);//open all 9 pipes 
+	
+	for(int i=0;i<numberOfPrograms;i++){
+		if (i==0){//the first program 
+			if(fork()==0){//1st child proces
+				dup2(fd[0][1],STDOUT_FILENO);
+				execvp(......);
+			}
+		}
+	    else if(i>0&&i<n-1){//The middle progs, not first, not last 
+			if(fork()==0){//child process
+		    dup2(fd[i-1][0],STDIN_FILENO);//connect stdin to read end of prev pipe
+				dup2(fd[i][1],STDOUT_FILENO);//connect stdout towrite end of next pipe  
+				execvp(...)
+			}
+		}
+		else{//the last program 
+			if(fork()==0){//child process
+				dup2(fd[i-1][0],STDIN_FILENO);
+				execvp(...);
+			}
+		}
+	}
+	//Parent process 
+}

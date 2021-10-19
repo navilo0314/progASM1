@@ -1,0 +1,1 @@
+./split ./prog1 abc def gh ! ./prog2 kasdf afsd da jads n ! ./prog3 jio fuck u asfd

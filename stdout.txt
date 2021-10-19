@@ -1,0 +1,3 @@
+this is the hello prog
+argc is 1
+The 0th command arg of hello is ./hello
